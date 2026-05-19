@@ -27,6 +27,8 @@
                 <p class="subtitle">ציון סופי</p>
                 <a href="index.html">למעבר לעמוד המחשב ציוני ספורט</a>
 				<br><br>
+				<a href="history.html">להיסטוריית הציונים שלי</a>
+				<br><br>
 				<a href="training.html">לעמוד המציג דרכי אימון למבחנים</a>
             </div>
         </div>
@@ -61,6 +63,8 @@
                     <h3>הציון הכולל:</h3>
                     <div class="score-display"><span id="finalGradeValue" class="final-score">--</span></div>
                     <p id="finalResultMessage" class="result-message"></p>
+                    <button id="saveToHistory" class="btn-secondary" style="margin-top: 15px;">שמור להיסטוריה</button>
+                    <p id="saveMessage" class="save-message hidden" style="color: #4caf50; margin-top: 10px;">✓ נשמר בהצלחה!</p>
                 </div>
             </div>
         </div>
@@ -72,6 +76,7 @@
         </div>
     </footer>
 
+    <script src="storage.js"></script>
     <script src="finalGrade.js"></script>
 </body>
 </html>

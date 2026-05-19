@@ -332,6 +332,57 @@ const activeWeights = allWeights.filter(w =>
             finalGradeValue.textContent = finalNumber;
             resultDiv.classList.remove('hidden');
          resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+         
+         // Setup save button
+         setupSaveButton(finalNumber, gender, activeWeights);
         }
     });
 });
+
+
+
+function setupSaveButton(finalNumber, gender, activeWeights) {
+    const saveButton = document.getElementById('saveToHistory');
+    const saveMessage = document.getElementById('saveMessage');
+    
+    if (!saveButton) return;
+    
+    // Hide save message initially
+    if (saveMessage) {
+        saveMessage.classList.add('hidden');
+    }
+    
+    // Remove old listeners by cloning
+    const newSaveButton = saveButton.cloneNode(true);
+    saveButton.parentNode.replaceChild(newSaveButton, saveButton);
+    
+    newSaveButton.addEventListener('click', function() {
+        // Collect all test inputs
+        const tests = {};
+        activeWeights.forEach(w => {
+            const inputEl = document.getElementById('test_' + w.test_type);
+            if (inputEl && inputEl.value.trim()) {
+                tests[w.test_type] = inputEl.value.trim();
+            }
+        });
+        
+        const scoreData = {
+            type: 'final',
+            grade: '12',
+            gender: gender,
+            tests: tests,
+            finalScore: finalNumber,
+            timestamp: Date.now()
+        };
+        
+        ScoreStorage.saveScore(scoreData);
+        
+        // Show success message
+        if (saveMessage) {
+            saveMessage.classList.remove('hidden');
+            setTimeout(() => {
+                saveMessage.classList.add('hidden');
+            }, 3000);
+        }
+    });
+}

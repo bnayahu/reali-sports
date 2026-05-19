@@ -444,8 +444,48 @@ function displayResult(finalScore, field) {
     const resultDiv = document.getElementById('result');
     const finalScoreSpan = document.getElementById('finalScore');
     const resultMessage = document.getElementById('resultMessage');
+    const saveButton = document.getElementById('saveToHistory');
+    const saveMessage = document.getElementById('saveMessage');
 
     finalScoreSpan.textContent = finalScore;
+    
+    // Hide save message when displaying new result
+    if (saveMessage) {
+        saveMessage.classList.add('hidden');
+    }
+    
+    // Setup save button click handler
+    if (saveButton) {
+        // Remove old listeners by cloning
+        const newSaveButton = saveButton.cloneNode(true);
+        saveButton.parentNode.replaceChild(newSaveButton, saveButton);
+        
+        newSaveButton.addEventListener('click', function() {
+            const grade = document.getElementById('grade').value;
+            const gender = document.getElementById('gender').value;
+            const scoreInput = document.getElementById('score').value;
+            
+            const scoreData = {
+                type: 'single',
+                grade: grade,
+                gender: gender,
+                field: field,
+                score: scoreInput,
+                finalScore: finalScore,
+                timestamp: Date.now()
+            };
+            
+            ScoreStorage.saveScore(scoreData);
+            
+            // Show success message
+            if (saveMessage) {
+                saveMessage.classList.remove('hidden');
+                setTimeout(() => {
+                    saveMessage.classList.add('hidden');
+                }, 3000);
+            }
+        });
+    }
 
     // Add message based on score
     let message = '';
