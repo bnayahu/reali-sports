@@ -1,0 +1,5 @@
+# Bob Shell temporary files
+.bob/
+
+# Claude settings
+.claude/

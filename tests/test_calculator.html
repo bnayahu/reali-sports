@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .pass {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .fail {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .summary {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e7f3ff;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Calculator Test Suite</h1>
+    <div id="test-results"></div>
+    <div id="summary" class="summary"></div>
+
+    <script src="../calculator.js"></script>
+    <script>
+        // Test utilities
+        const testResults = [];
+
+        function assert(condition, message) {
+            if (!condition) {
+                throw new Error(message);
+            }
+        }
+
+        function assertEquals(actual, expected, message) {
+            if (actual !== expected) {
+                throw new Error(`${message}\nExpected: ${expected}\nActual: ${actual}`);
+            }
+        }
+
+        function assertNull(value, message) {
+            if (value !== null) {
+                throw new Error(`${message}\nExpected: null\nActual: ${value}`);
+            }
+        }
+
+        async function runTest(name, testFn) {
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'test-result';
+            
+            try {
+                await testFn();
+                resultDiv.classList.add('pass');
+                resultDiv.textContent = `✓ ${name}`;
+                testResults.push({ name, passed: true });
+            } catch (error) {
+                resultDiv.classList.add('fail');
+                resultDiv.textContent = `✗ ${name}\n${error.message}`;
+                testResults.push({ name, passed: false, error: error.message });
+            }
+            
+            document.getElementById('test-results').appendChild(resultDiv);
+        }
+
+        // Mock data for testing
+        const mockPullupsData = [
+            { final_score: '100', boys_grade12: '19.0', girls_grade12: '' },
+            { final_score: '95', boys_grade12: '16.0', girls_grade12: '' },
+            { final_score: '90', boys_grade12: '14.0', girls_grade12: '' },
+            { final_score: '85', boys_grade12: '15.0', girls_grade12: '' },
+            { final_score: '80', boys_grade12: '14.0', girls_grade12: '' },
+            { final_score: '75', boys_grade12: '13.0', girls_grade12: '' },
+            { final_score: '70', boys_grade12: '12.0', girls_grade12: '' },
+            { final_score: '65', boys_grade12: '11.0', girls_grade12: '' },
+            { final_score: '60', boys_grade12: '10.0', girls_grade12: '' },
+            { final_score: '55', boys_grade12: '5.0', girls_grade12: '' },
+            { final_score: '50', boys_grade12: '4.0', girls_grade12: '' },
+            { final_score: '45', boys_grade12: '3.0', girls_grade12: '' },
+            { final_score: '40', boys_grade12: '0.0', girls_grade12: '' }
+        ];
+
+        // Test suite
+        async function runAllTests() {
+            // Test 1: Valid column with data should return score
+            await runTest('Valid column returns correct score', () => {
+                const result = computeFinalScoreFromTable(15, mockPullupsData, 'boys_grade12', 'count');
+                assertEquals(result, 85, 'Should return 85 for 15 pullups boys grade 12');
+            });
+
+            // Test 2: Score above highest benchmark should return 100
+            await runTest('Score above highest benchmark returns 100', () => {
+                const result = computeFinalScoreFromTable(20, mockPullupsData, 'boys_grade12', 'count');
+                assertEquals(result, 100, 'Should return 100 for 20 pullups boys grade 12');
+            });
+
+            // Test 3: Score below lowest benchmark should return 40
+            await runTest('Score below lowest benchmark returns 40', () => {
+                const result = computeFinalScoreFromTable(0, mockPullupsData, 'boys_grade12', 'count');
+                assertEquals(result, 40, 'Should return 40 for 0 pullups boys grade 12');
+            });
+
+            // Test 4: Empty column should return null
+            await runTest('Empty column (no grades set) should return null', () => {
+                const result = computeFinalScoreFromTable(10, mockPullupsData, 'girls_grade12', 'count');
+                assertNull(result, 'Should return null for girls_grade12 which has no data');
+            });
+
+            // Test 5: Column that doesn't exist should return null
+            await runTest('Non-existent column should return null', () => {
+                const result = computeFinalScoreFromTable(10, mockPullupsData, 'nonexistent_column', 'count');
+                assertNull(result, 'Should return null for non-existent column');
+            });
+
+            // Display summary
+            const passed = testResults.filter(r => r.passed).length;
+            const failed = testResults.filter(r => !r.passed).length;
+            const summaryDiv = document.getElementById('summary');
+            summaryDiv.innerHTML = `
+                <h2>Test Summary</h2>
+                <p><strong>Total:</strong> ${testResults.length}</p>
+                <p><strong>Passed:</strong> ${passed}</p>
+                <p><strong>Failed:</strong> ${failed}</p>
+            `;
+        }
+
+        // Run tests when page loads
+        window.addEventListener('DOMContentLoaded', runAllTests);
+    </script>
+</body>
+</html>

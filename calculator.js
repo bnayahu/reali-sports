@@ -377,7 +377,7 @@ async function calculateScore(event) {
     const finalScore = computeFinalScoreFromTable(studentScore, fieldScores, columnName, fieldInfo.input_format);
 
     if (finalScore === null) {
-        showError('לא ניתן לחשב ציון עבור התוצאה שהוזנה');
+        showError('לא הוגדרו ציונים עבור שילוב זה של מבחן/מגדר/שכבה');
         return;
     }
 
@@ -409,6 +409,12 @@ function computeFinalScoreFromTable(studentScore, fieldScores, columnName, input
 
     if (!fieldScores[0] || !(columnName in fieldScores[0])) {
         return null;
+    }
+
+    // Check if the column has ANY non-null values
+    const hasAnyData = fieldScores.some(row => parseValue(row[columnName]) !== null);
+    if (!hasAnyData) {
+        return null; // No grades set for this combination
     }
 
     // Determine if lower numerical value means a better performance
